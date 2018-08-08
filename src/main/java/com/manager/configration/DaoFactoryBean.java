@@ -2,26 +2,26 @@ package com.manager.configration;
 
 import org.springframework.beans.factory.FactoryBean;
 
-public class TestFactoryBean<T> implements FactoryBean<T> {
+public class DaoFactoryBean<T>  implements FactoryBean<T> {
+
+	public DaoFactoryBean() {
+		
+	}
 
 	private Class<T> mapperInterface;
 	
-	public TestFactoryBean() {
-	}
-
-	public TestFactoryBean(Class<T> mapperInterface) {
+	public DaoFactoryBean(Class<T> mapperInterface) {
 		this.mapperInterface = mapperInterface;
 	}
 
 	@Override
 	public T getObject() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return ProxyBeanCreator.getMapper(mapperInterface);
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return this.mapperInterface;
+		return Object.class;
 	}
 
 	@Override

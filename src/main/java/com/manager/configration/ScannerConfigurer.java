@@ -22,6 +22,8 @@ import org.springframework.util.StringUtils;
 public class ScannerConfigurer
 		implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
 
+	private DaoFactoryBean<?> mapperFactoryBean = new DaoFactoryBean<Object>();
+	
 	private ApplicationContext applicationContext;
 
 	private String beanName;

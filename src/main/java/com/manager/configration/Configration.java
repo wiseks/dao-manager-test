@@ -7,8 +7,13 @@ import org.springframework.context.annotation.Configuration;
 public class Configration {
 
 	@Bean
-	public ScannerConfigurer scannerConfigurer(){
-		ScannerConfigurer config = new ScannerConfigurer("com.manager");
+	public ScannerConfigurer scannerConfigurer() {
+		String packageName = "com.manager.dao";
+		ProxyBeanCreator creator = new ProxyBeanCreator(packageName);
+		ScannerConfigurer config = new ScannerConfigurer(packageName);
+		
 		return config;
 	}
+	
+
 }
