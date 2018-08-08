@@ -61,6 +61,7 @@ public class ScannerConfigurer
 
 		PathMapperScanner scanner = new PathMapperScanner(registry);
 		scanner.setResourceLoader(this.applicationContext);
+		scanner.registerFilters();
 		scanner.scan(StringUtils.tokenizeToStringArray(this.basePackage,
 				ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
 	}
