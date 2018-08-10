@@ -9,7 +9,6 @@ public class Configration {
 	@Bean
 	public ScannerConfigurer scannerConfigurer() {
 		String packageName = "com.manager.dao";
-		ProxyBeanCreator creator = new ProxyBeanCreator(packageName);
 		ScannerConfigurer config = new ScannerConfigurer(packageName);
 		
 		return config;

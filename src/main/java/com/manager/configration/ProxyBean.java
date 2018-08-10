@@ -5,16 +5,23 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 public class ProxyBean<T> implements InvocationHandler {
 	
-	private final Class<T> mapperInterface;
+	private Class<T> mapperInterface;
 	
+
 	public ProxyBean(Class<T> mapperInterface) {
 		this.mapperInterface = mapperInterface;
 	}
+	
+	public Object bind(Class<T> cls) {
+        this.mapperInterface = cls;
+        return Proxy.newProxyInstance(cls.getClassLoader(), new Class[] {mapperInterface}, this);
+    }
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

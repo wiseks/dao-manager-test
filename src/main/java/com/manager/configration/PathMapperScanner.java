@@ -1,10 +1,12 @@
 package com.manager.configration;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Set;
 
 import org.mybatis.spring.mapper.MapperFactoryBean;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -19,11 +21,18 @@ import org.springframework.core.type.filter.TypeFilter;
 public class PathMapperScanner extends ClassPathBeanDefinitionScanner {
 
 	private DaoFactoryBean<?> mapperFactoryBean = new DaoFactoryBean<>();
+	
+	private Set<BeanDefinitionHolder> beansSet;
 
 	public PathMapperScanner(BeanDefinitionRegistry registry) {
-		super(registry);
+		super(registry,false);
 	}
 	
+	
+	public Set<BeanDefinitionHolder> getBeansSet() {
+		return beansSet;
+	}
+
 	public void setMapperFactoryBean(DaoFactoryBean<?> mapperFactoryBean) {
 	    this.mapperFactoryBean = mapperFactoryBean != null ? mapperFactoryBean : new DaoFactoryBean<Object>();
 	  }
@@ -88,7 +97,7 @@ public class PathMapperScanner extends ClassPathBeanDefinitionScanner {
 		} else {
 			processBeanDefinitions(beanDefinitions);
 		}
-
+		beansSet = beanDefinitions;
 		return beanDefinitions;
 	}
 
@@ -106,8 +115,17 @@ public class PathMapperScanner extends ClassPathBeanDefinitionScanner {
 			// but, the actual class of the bean is MapperFactoryBean
 			definition.getConstructorArgumentValues().addGenericArgumentValue(definition.getBeanClassName()); // issue
 																												// #59
-			definition.setBeanClass(this.mapperFactoryBean.getClass());
-
+//			definition.setBeanClass(this.mapperFactoryBean.getClass());
+//			Constructor<?>[]  ctors = definition.getBeanClass().getConstructors();
+//			for(Constructor<?> ctor : ctors){
+//				int count = ctor.getParameterCount();
+//				if(count>0){
+//					Class<?> args = ctor.getParameterTypes()[0];
+//					definition.add
+//					BeanUtils.instantiateClass(ctor, args);
+//				}
+//			}
+			
 			// definition.getPropertyValues().add("addToConfig", true);
 
 			boolean explicitFactoryUsed = false;

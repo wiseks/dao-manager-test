@@ -8,7 +8,7 @@ import org.apache.ibatis.binding.BindingException;
 
 public class ProxyBeanCreator {
 
-	private static final Map<Class<?>, ProxyFactory<?>> knownMappers = new HashMap<Class<?>, ProxyFactory<?>>();
+	private static final Map<String, Class<?>> knownMappers = new HashMap<>();
 
 	public ProxyBeanCreator(String packageName) {
 		ClassResolverUtil<Class<?>> util = new ClassResolverUtil<>();
@@ -18,14 +18,14 @@ public class ProxyBeanCreator {
 		}
 	}
 
-	public <T> void addMapper(Class<T> type) {
+	private <T> void addMapper(Class<T> type) {
 		if (type.isInterface()) {
 			if (hasMapper(type)) {
 				throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
 			}
 			boolean loadCompleted = false;
 			try {
-				knownMappers.put(type, new ProxyFactory<T>(type));
+				knownMappers.put(type.getName(), type);
 				// It's important that the type is added before the parser is
 				// run
 				// otherwise the binding may automatically be attempted by the
@@ -36,7 +36,7 @@ public class ProxyBeanCreator {
 				loadCompleted = true;
 			} finally {
 				if (!loadCompleted) {
-					knownMappers.remove(type);
+					knownMappers.remove(type.getName());
 				}
 			}
 		}
@@ -46,16 +46,7 @@ public class ProxyBeanCreator {
 		return knownMappers.containsKey(type);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T getMapper(Class<T> type) {
-		final ProxyFactory<T> mapperProxyFactory = (ProxyFactory<T>) knownMappers.get(type);
-		if (mapperProxyFactory == null) {
-			throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
-		}
-		try {
-			return mapperProxyFactory.newInstance();
-		} catch (Exception e) {
-			throw new BindingException("Error getting mapper instance. Cause: " + e, e);
-		}
+	public Class<?> getMapper(String beanName) {
+		return knownMappers.get(beanName);
 	}
 }
