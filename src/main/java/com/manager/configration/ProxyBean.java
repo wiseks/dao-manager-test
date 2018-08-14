@@ -9,6 +9,8 @@ import java.lang.reflect.Proxy;
 
 import org.apache.ibatis.reflection.ExceptionUtil;
 
+import com.manager.annotations.ShiroDescription;
+
 public class ProxyBean<T> implements InvocationHandler {
 	
 	private Class<T> mapperInterface;
@@ -34,6 +36,10 @@ public class ProxyBean<T> implements InvocationHandler {
 		    } catch (Throwable t) {
 		      throw ExceptionUtil.unwrapThrowable(t);
 		    }
+		 ShiroDescription desc = method.getAnnotation(ShiroDescription.class);
+		 if(desc!=null){
+			 System.out.println(">>>>>>>>>>>>>>>>>>>>>"+desc.name());
+		 }
 //		    final MapperMethod mapperMethod = cachedMapperMethod(method);
 //		    return mapperMethod.execute(sqlSession, args);
 		 return null;
