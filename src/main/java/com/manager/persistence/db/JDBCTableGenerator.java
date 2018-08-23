@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -128,18 +129,15 @@ public class JDBCTableGenerator {
 	public void fixtTable(String basePackage){
 		ClassResolverUtil<Object> util = new ClassResolverUtil<Object>();
 		Set<Class<?>> set = util.find(basePackage).getMatches();
-		for(Class<?> clazz : set){
-			Table table = clazz.getAnnotation(Table.class);
-			if(table!=null){
-				TableMeta tm = TableMeta.parse(clazz);
-				try {
-					this.fixTable(clazz, tm);
-				} catch (Exception e) {
-					log.error("error",e);
-					e.printStackTrace();
-				}
+		set.stream().filter(clazz -> Optional.ofNullable(clazz.getAnnotation(Table.class)).isPresent()).forEach(clazz ->{
+			TableMeta tm = TableMeta.parse(clazz);
+			try {
+				this.fixTable(clazz, tm);
+			} catch (Exception e) {
+				log.error("error",e);
+				e.printStackTrace();
 			}
-		}
+		});
 	}
 
 	private void fixTable(Class<?> clazz,TableMeta meta) throws Exception {
