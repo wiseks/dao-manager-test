@@ -207,7 +207,7 @@ public class ColumnMeta {
 		switch (type) {
 			case CHAR:
 			case VARCHAR:
-				if (length >= 255) {
+				if (length > 255) {
 					return "TEXT";
 				}
 				return type.toString() + "(" + length + ")";

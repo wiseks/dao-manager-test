@@ -14,6 +14,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.manager.configration.ClassResolverUtil;
 import com.manager.persistence.annotation.Table;
 import com.yaowan.game.common.util.json.GsonUtil;
 
@@ -21,13 +22,13 @@ import com.yaowan.game.common.util.json.GsonUtil;
  * 数据库仓储
  *
  */
-public class JDBCRepository {
+public class JDBCTableGenerator {
 
-	public static final Log log = LogFactory.getLog(JDBCRepository.class);
+	public static final Log log = LogFactory.getLog(JDBCTableGenerator.class);
 
 	protected DB db;
 
-	public JDBCRepository(DB db) {
+	public JDBCTableGenerator(DB db) {
 		this.db = db;
 	}
 
@@ -148,7 +149,7 @@ public class JDBCRepository {
 		}
 	}
 
-	public List<String> buildCreateSQL(List<Integer> specialCluster, TableMeta meta) {
+	private List<String> buildCreateSQL(List<Integer> specialCluster, TableMeta meta) {
 		List<String> resultList = new ArrayList<>();
 		if (meta.getClusterBy() == null) {
 			resultList.add(buildCreateSQL(meta.getName(), meta));
@@ -162,8 +163,25 @@ public class JDBCRepository {
 		}
 		return resultList;
 	}
+	
+	public void fixtTable(String basePackage){
+		ClassResolverUtil<Object> util = new ClassResolverUtil<Object>();
+		Set<Class<?>> set = util.find(basePackage).getMatches();
+		for(Class<?> clazz : set){
+			Table table = clazz.getAnnotation(Table.class);
+			if(table!=null){
+				TableMeta tm = TableMeta.parse(clazz);
+				try {
+					this.fixTable(clazz, tm);
+				} catch (Exception e) {
+					log.error("error",e);
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
-	public void fixTable(Class<?> clazz,TableMeta meta) throws Exception {
+	private void fixTable(Class<?> clazz,TableMeta meta) throws Exception {
 		Table annotation = clazz.getAnnotation(Table.class);
 		if (!annotation.autoCreate()) {
 			return;

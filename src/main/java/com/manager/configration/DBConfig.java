@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.manager.persistence.db.DB;
-import com.manager.persistence.db.JDBCRepository;
+import com.manager.persistence.db.JDBCTableGenerator;
 import com.yaowan.game.common.util.PropertiesLoader;
 
 @Configuration
@@ -17,9 +17,9 @@ public class DBConfig {
 	}
 	
 	@Bean
-	public JDBCRepository jDBCRepository(){
+	public JDBCTableGenerator jDBCRepository(){
 		try {
-			JDBCRepository jd = new JDBCRepository(db());
+			JDBCTableGenerator jd = new JDBCTableGenerator(db());
 			return jd;
 		} catch (Exception e) {
 			e.printStackTrace();

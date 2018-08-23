@@ -50,7 +50,7 @@ public enum TypeEnum {
             return DOUBLE;
         if (type == String.class) {
         	Column column = field.getAnnotation(Column.class);
-        	if (column.length() < 255) {
+        	if (column.length() <= 255) {
         		if (column.immutable())
         			return CHAR;
         		else

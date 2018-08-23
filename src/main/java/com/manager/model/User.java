@@ -11,10 +11,10 @@ public class User {
 	@Column(name="id",comment="id")
 	private int id;
 	
-	@Column(name="name",comment="name")
+	@Column(name="name",length=255,comment="name")
 	private String name;
 	
-	@Column(name="desc",comment="desc")
+	@Column(name="desc",length=255,comment="desc")
 	private String desc;
 
 	public int getId() {
