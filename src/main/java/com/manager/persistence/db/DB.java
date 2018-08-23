@@ -51,19 +51,20 @@ public class DB {
 		this.dataSource = BasicDataSourceFactory.createDataSource(properties);
 		if (properties.containsKey("db.slowLog"))
 			this.slowLog = Integer.parseInt(properties.getProperty("db.slowLog"));
-		if (properties.containsKey("db.saveThreads")) {
-			int threads = Integer.parseInt(properties.getProperty("db.saveThreads"));
-			pools = new ScheduledThreadPoolExecutor[threads];
-			for (int i=0; i<threads; i++) {
-				pools[i] = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
-					
-					@Override
-					public Thread newThread(Runnable r) {
-						return new Thread();
-					}
-				});
-			}
-		}
+		
+//		if (properties.containsKey("db.saveThreads")) {
+//			int threads = Integer.parseInt(properties.getProperty("db.saveThreads"));
+//			pools = new ScheduledThreadPoolExecutor[threads];
+//			for (int i=0; i<threads; i++) {
+//				pools[i] = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
+//					
+//					@Override
+//					public Thread newThread(Runnable r) {
+//						return new Thread();
+//					}
+//				});
+//			}
+//		}
 	}
 
 	public DB(String name, DataSource dataSource, int threads) {
