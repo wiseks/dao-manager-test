@@ -109,45 +109,6 @@ public class JDBCTableGenerator {
 	        }
 	    }
 
-	private void diffEntityBetweenTableSql(TableMeta meta, TableMeta orig) throws SQLException {
-		// 字段
-		Set<String> mark = new HashSet<>();
-		for (ColumnMeta columnMeta : meta.getColumns()) {
-			mark.add(columnMeta.getName());
-			ColumnMeta column = orig.getColumnMetaByColumnName(columnMeta.getName());
-			// 新增
-			if (column == null) {
-
-				db.update("ALTER TABLE `" + orig.getName() + "` ADD COLUMN " + columnMeta.buildCreateSQL());
-			} else {
-				// 列依然存在，但有变动
-				if (!column.isSame(columnMeta)) {
-					// 列依然存在，但有变动
-					db.update("ALTER TABLE `" + orig.getName() + "` MODIFY COLUMN " + columnMeta.buildCreateSQL());
-				}
-			}
-		}
-
-		// 索引
-		mark.clear();
-		for (IndexMeta indexMeta : meta.getIndexes().values()) {
-			mark.add(indexMeta.getName());
-			IndexMeta index = orig.getIndexes().get(indexMeta.getName());
-			if (index == null) {
-				db.update("ALTER TABLE `" + orig.getName() + "` ADD " + indexMeta.buildCreateSQL());
-			} else {
-				if (!index.isSame(indexMeta)) {
-					db.update("DROP INDEX `" + indexMeta.getName() + "` on `" + meta.getName() + "`");
-					db.update("ALTER TABLE `" + meta.getName() + "` ADD " + indexMeta.buildCreateSQL());
-				}
-			}
-		}
-		for (String indexName : orig.getIndexes().keySet()) {
-			if (!mark.contains(indexName)) {
-				db.update("DROP INDEX `" + indexName + "` on `" + orig.getName() + "`");
-			}
-		}
-	}
 
 	private List<String> buildCreateSQL(List<Integer> specialCluster, TableMeta meta) {
 		List<String> resultList = new ArrayList<>();
@@ -197,13 +158,13 @@ public class JDBCTableGenerator {
 		List<Integer> specialClusters = new ArrayList<>();
 		if (meta.getCluster() > 0) {
 			// 分表需要整体调整
-//			for (int i = 0; i < meta.getCluster(); i++) {
-//				if (tables.contains(meta.getName() + "_" + i)) {
-//					TableMeta orig = TableMeta.getTableFromDB(meta.getName() + "_" + i, db);
-//					diffEntityBetweenTable(meta, orig);
-//					specialClusters.add(i);
-//				}
-//			}
+			for (int i = 0; i < meta.getCluster(); i++) {
+				if (tables.contains(meta.getName() + "_" + i)) {
+					TableMeta orig = TableMeta.getTableFromDB(meta.getName() + "_" + i, db);
+					diffEntityBetweenTable(meta, orig);
+					specialClusters.add(i);
+				}
+			}
 
 			if (specialClusters.size() < meta.getCluster()) {
 				List<String> sql = buildCreateSQL(specialClusters,meta);
